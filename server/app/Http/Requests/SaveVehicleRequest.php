@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class SaveVehicleRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'name' => [
+                'required',
+                'min:3',
+                'max:255'
+            ],
+            'brand' => [
+                'required',
+                'min:3',
+                'max:255'
+            ],
+            'year' => [
+                'required',
+                'size:4'
+            ],
+            'plate' => [
+                'required',
+                'regex:/([A-Za-z]{2}[A-Za-z0-9][0-9][A-Za-z0-9]{3})|([A-Za-z]{3}-?[0-9]{4})/'
+            ],
+            'sale_value' => [
+                'required',
+                'decimal:0,2'
+            ],
+        ];
+    }
+}
