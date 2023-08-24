@@ -15,7 +15,6 @@ class VehicleService {
             throw new AppError('Ano inválido');
         }
 
-
         if($id != null){
             $vehicle = $this->repository->update($data, $id);
         } else {
@@ -28,5 +27,14 @@ class VehicleService {
     public function list(){
         $vehicles = $this->repository->findAll();
         return VehicleResource::collection($vehicles);      
+    }
+
+    public function get($id){
+        $vehicle = $this->repository->findByID($id);
+        return new VehicleResource($vehicle);      
+    }
+
+    public function delete($id){
+        $this->repository->delete($id);    
     }
 }

@@ -15,8 +15,7 @@ class VehicleRepository implements VehicleRepositoryInterface {
     }
 
     public function findAll(){
-        $vehicles = Vehicle::paginate();
-        return $vehicles;
+        return Vehicle::paginate();
     }
 
     public function create($data){
@@ -26,5 +25,6 @@ class VehicleRepository implements VehicleRepositoryInterface {
     public function update($data, $id){
         $vehicle = Vehicle::findOrFail($id);
         $vehicle->update($data);
+        return $vehicle;
     }
 }
