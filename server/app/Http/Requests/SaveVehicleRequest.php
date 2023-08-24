@@ -38,6 +38,7 @@ class SaveVehicleRequest extends FormRequest
             ],
             'plate' => [
                 'required',
+                'unique:vehicles',
                 'regex:/([A-Za-z]{2}[A-Za-z0-9][0-9][A-Za-z0-9]{3})|([A-Za-z]{3}-?[0-9]{4})/'
             ],
             'sale_value' => [
@@ -52,9 +53,10 @@ class SaveVehicleRequest extends FormRequest
             'brand.required' => 'Marca obrigatória',
             'brand.min' => 'O campo marca deve conter no mínimo :min caracteres.',
             'brand.max' => 'O campo marca deve conter no máximo :max caracteres.',
-            'plate.required' => 'Placa obrigatória',
-            'plate.regex' => 'Placa inválida',
-            'sale_value.required' => 'Valor de venda obrigatório',
+            'plate.required' => 'Placa obrigatória.',
+            'plate.unique' => 'Placa já registrada.',
+            'plate.regex' => 'Placa inválida.',
+            'sale_value.required' => 'Valor de venda obrigatório.',
             'sale_value.decimal' => 'O valor de venda deve ter entre :decimal casas decimais.'
         ];
     }

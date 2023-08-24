@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('brand');
             $table->string('year');
-            $table->string('plate');
+            $table->string('plate')->unique();
             $table->decimal('sale_value', places:2);
         });
     }
