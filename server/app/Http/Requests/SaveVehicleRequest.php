@@ -46,4 +46,16 @@ class SaveVehicleRequest extends FormRequest
             ],
         ];
     }
+
+    public function messages(){
+        return [
+            'brand.required' => 'Marca obrigatória',
+            'brand.min' => 'O campo marca deve conter no mínimo :min caracteres.',
+            'brand.max' => 'O campo marca deve conter no máximo :max caracteres.',
+            'plate.required' => 'Placa obrigatória',
+            'plate.regex' => 'Placa inválida',
+            'sale_value.required' => 'Valor de venda obrigatório',
+            'sale_value.decimal' => 'O valor de venda deve ter entre :decimal casas decimais.'
+        ];
+    }
 }

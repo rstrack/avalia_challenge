@@ -12,7 +12,7 @@ class VehicleService {
     public function save($data, $id = null) {
         
         if ((int)$data['year'] < 1950 || (int)$data['year'] >  date("Y") + 1){
-            throw new AppError('Invalid year');
+            throw new AppError('Ano inválido');
         }
 
 
