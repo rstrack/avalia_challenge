@@ -1,8 +1,6 @@
-export const formatDateString = (date: string): string => {
-  const _date = new Date(date);
-  const day = _date.getDate();
-  const month = _date.getMonth();
-  const year = _date.getFullYear();
+export const formatDateString = (dateString: string): string => {
+  const date = dateString.split('T')[0];
+  const [year, month, day] = date.split('-');
 
   return day + '/' + month + '/' + year;
 };

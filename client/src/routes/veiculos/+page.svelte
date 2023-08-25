@@ -11,6 +11,7 @@
   import Dialog, { Actions, Content, Title } from '@smui/dialog';
   import IconButton, { Icon } from '@smui/icon-button';
   import LinearProgress from '@smui/linear-progress';
+  import Tooltip, { Wrapper } from '@smui/tooltip';
   import { toasts, ToastContainer, FlatToast } from 'svelte-toasts';
   import { api } from '../../api/axios';
   import { formatDateString } from '../../helpers/dateFormat';
@@ -37,7 +38,7 @@
   let vehicles: Vehicle[] = [];
   let selectedVehicleId = -1;
 
-  $: start = Math.min((page - 1) * ROWS_PER_PAGE, count);
+  $: start = (page - 1) * ROWS_PER_PAGE;
   $: end = Math.min(page * ROWS_PER_PAGE, count);
   $: page && getVehicles();
 
@@ -74,8 +75,11 @@
   };
 
   onMount(() => {
-    if (history.state.success) {
+    if (history.state.created) {
       toasts.success('Veículo adicionado com sucesso!');
+    }
+    if (history.state.updated) {
+      toasts.success('Veículo editado com sucesso!');
     }
   });
 </script>
@@ -88,13 +92,13 @@
   </Button>
 </div>
 
-<DataTable style="width: 100%;">
+<DataTable class="data-table">
   <Head>
     <Row>
       <Cell>Marca</Cell>
       <Cell>Modelo</Cell>
       <Cell>Ano</Cell>
-      <!-- <Cell>Placa</Cell> -->
+      <Cell>Placa</Cell>
       <Cell>Valor de venda</Cell>
       <Cell>Data de cadastro</Cell>
       <Cell>Opções</Cell>
@@ -106,19 +110,23 @@
         <Cell>{vehicle.brand}</Cell>
         <Cell>{vehicle.name}</Cell>
         <Cell>{vehicle.year}</Cell>
-        <!-- <Cell>{vehicle.plate}</Cell> -->
+        <Cell>{vehicle.plate}</Cell>
         <Cell>{brl.format(vehicle.sale_value)}</Cell>
         <Cell>{formatDateString(vehicle.created_at)}</Cell>
         <Cell>
           <div>
-            <Button href={`veiculos/${vehicle.id}`}>
-              <Icon class="material-icons">edit</Icon>
-              <Label>Editar</Label>
-            </Button>
-            <Button on:click={() => handleDelete(vehicle.id)}>
-              <Icon class="material-icons">delete</Icon>
-              <Label>Excluir</Label>
-            </Button>
+            <Wrapper>
+              <IconButton href={`veiculos/${vehicle.id}`} size="mini">
+                <Icon class="material-icons">edit</Icon>
+              </IconButton>
+              <Tooltip>Editar</Tooltip>
+            </Wrapper>
+            <Wrapper>
+              <IconButton on:click={() => handleDelete(vehicle.id)} size="mini">
+                <Icon class="material-icons">delete</Icon>
+              </IconButton>
+              <Tooltip>Excluir</Tooltip>
+            </Wrapper>
           </div>
         </Cell>
       </Row>
@@ -127,7 +135,7 @@
   <LinearProgress indeterminate bind:closed={loaded} slot="progress" />
   <Pagination slot="paginate">
     <svelte:fragment slot="total">
-      {start + 1 || 0}-{end || 0} de {count || 0}
+      {Math.min(start + 1, end) || 0}-{end || 0} de {count || 0}
     </svelte:fragment>
 
     <IconButton
@@ -184,5 +192,9 @@
     flex-direction: column;
     align-items: start;
     margin-bottom: 32px;
+  }
+
+  :global(.data-table) {
+    width: 100%;
   }
 </style>

@@ -19,7 +19,7 @@
     margin: 0 20%;
   }
 
-  @media (max-width: 1200px) {
+  @media (max-width: 1500px) {
     .base-container {
       margin: 0 32px;
     }

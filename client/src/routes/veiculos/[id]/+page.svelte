@@ -15,8 +15,13 @@
   } from 'svelte-forms/validators';
   import { api } from '../../../api/axios';
   import { FlatToast, ToastContainer, toasts } from 'svelte-toasts';
+  import { onMount } from 'svelte';
+  import LinearProgress from '@smui/linear-progress';
 
-  let loading = false;
+  export let data;
+
+  let loadedData = false;
+  let loadingSubmit = false;
 
   const brand = field('brand', '', [required(), min(3), max(255)]);
   const name = field('name', '', [required(), min(3), max(255)]);
@@ -24,12 +29,14 @@
     required(),
     between(1950, new Date().getFullYear())
   ]);
+
   const plate = field('plate', '', [
     required(),
     pattern(
       /([A-Za-z]{2}[A-Za-z0-9][0-9][A-Za-z0-9]{3})|([A-Za-z]{3}-?[0-9]{4})/
     )
   ]);
+
   const sale_value = field('sale_value', '', [
     required(),
     pattern(/(\d+(\.)?)+(\,\d{1,2})?$/)
@@ -39,23 +46,39 @@
 
   const handleSubmit = async () => {
     try {
-      loading = true;
+      loadingSubmit = true;
       await myForm.validate();
       if ($myForm.valid) {
-        await api.post('/vehicle/new', myForm.summary());
-        loading = false;
-        goto('/veiculos', { state: { created: true } });
+        await api.put(`vehicle/${data.id}`, myForm.summary());
+        loadingSubmit = false;
+        goto('/veiculos', { state: { updated: true } });
       } else {
-        loading = false;
+        loadingSubmit = false;
       }
     } catch (e: any) {
       toasts.error(e.response?.data.message || 'Erro no servidor');
-      loading = false;
+      loadingSubmit = false;
     }
   };
+
+  onMount(() => {
+    async function getVehicle() {
+      const result = await api.get(`vehicle/${data.id}`);
+      brand.set(result.data.data.brand);
+      name.set(result.data.data.name);
+      year.set(result.data.data.year);
+      plate.set(result.data.data.plate);
+      sale_value.set(result.data.data.sale_value);
+      loadedData = true;
+    }
+
+    getVehicle();
+  });
 </script>
 
-<h1>Novo Veículo</h1>
+<h1>Editar Veículo</h1>
+
+<LinearProgress indeterminate bind:closed={loadedData} slot="progress" />
 
 <LayoutGrid class="layout-grid">
   <Cell span={12}>
@@ -155,8 +178,8 @@
   <Cell span={12} />
 </LayoutGrid>
 <div class="submit-button">
-  <Button on:click={handleSubmit} variant="raised" disabled={loading}>
-    {#if loading}
+  <Button on:click={handleSubmit} variant="raised" disabled={loadingSubmit}>
+    {#if loadingSubmit}
       <CircularProgress style="height: 32px; width: 32px;" indeterminate />
     {:else}
       Enviar
@@ -172,6 +195,7 @@
     display: flex;
     justify-content: center;
   }
+
   :global(.layout-grid) {
     margin-top: 24px;
     padding: 0;
