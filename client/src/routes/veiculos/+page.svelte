@@ -1,10 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Button, { Label } from '@smui/button';
-  import DataTable, { Body, Cell, Head, Pagination, Row } from '@smui/data-table';
+  import DataTable, {
+    Body,
+    Cell,
+    Head,
+    Pagination,
+    Row
+  } from '@smui/data-table';
   import IconButton, { Icon } from '@smui/icon-button';
   import LinearProgress from '@smui/linear-progress';
   import { api } from '../../api/axios';
+  import { formatDateString } from '../../helpers/dateFormat';
 
   type Vehicle = {
     id: number;
@@ -12,9 +19,16 @@
     brand: string;
     year: string;
     plate: string;
+    sale_value: number;
+    created_at: string;
   };
 
   const ROWS_PER_PAGE = 15;
+
+  let brl = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  });
 
   let loaded = false;
   let page = 1;
@@ -62,7 +76,9 @@
       <Cell>Marca</Cell>
       <Cell>Modelo</Cell>
       <Cell>Ano</Cell>
-      <Cell>Placa</Cell>
+      <!-- <Cell>Placa</Cell> -->
+      <Cell>Valor de venda</Cell>
+      <Cell>Data de cadastro</Cell>
       <Cell>Opções</Cell>
     </Row>
   </Head>
@@ -72,7 +88,9 @@
         <Cell>{vehicle.brand}</Cell>
         <Cell>{vehicle.name}</Cell>
         <Cell>{vehicle.year}</Cell>
-        <Cell>{vehicle.plate}</Cell>
+        <!-- <Cell>{vehicle.plate}</Cell> -->
+        <Cell>{brl.format(vehicle.sale_value)}</Cell>
+        <Cell>{formatDateString(vehicle.created_at)}</Cell>
         <Cell>
           <div>
             <Button href={`veiculos/${vehicle.id}`}>

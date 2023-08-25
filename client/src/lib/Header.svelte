@@ -2,7 +2,12 @@
   import { page } from '$app/stores';
   import TopAppBar, { Row, Section, Title } from '@smui/top-app-bar';
   import IconButton from '@smui/icon-button';
-  import Drawer, { Content, Header, Scrim, Title as DrawerTitle } from '@smui/drawer';
+  import Drawer, {
+    Content,
+    Header,
+    Scrim,
+    Title as DrawerTitle
+  } from '@smui/drawer';
   import List, { Item, Text, Graphic, Separator, Subheader } from '@smui/list';
 
   let open = false;
@@ -17,7 +22,9 @@
 <TopAppBar variant="standard">
   <Row>
     <Section>
-      <IconButton class="material-icons" on:click={() => (open = !open)}>menu</IconButton>
+      <IconButton class="material-icons" on:click={() => (open = !open)}
+        >menu</IconButton
+      >
       <Title>Avalia Challenge</Title>
     </Section>
   </Row>
@@ -34,7 +41,9 @@
         on:click={() => (open = false)}
         activated={$page.url.pathname == '/veiculos'}
       >
-        <Graphic class="material-icons" aria-hidden="true">directions_car</Graphic>
+        <Graphic class="material-icons" aria-hidden="true"
+          >directions_car</Graphic
+        >
         <Text>Veículos</Text>
       </Item>
     </List>
