@@ -117,13 +117,13 @@
           <div>
             <Wrapper>
               <IconButton href={`veiculos/${vehicle.id}`} size="mini">
-                <Icon class="material-icons">edit</Icon>
+                <Icon class="material-icons" style="color:#2196f3">edit</Icon>
               </IconButton>
               <Tooltip>Editar</Tooltip>
             </Wrapper>
             <Wrapper>
               <IconButton on:click={() => handleDelete(vehicle.id)} size="mini">
-                <Icon class="material-icons">delete</Icon>
+                <Icon class="material-icons" style="color:#f44336">delete</Icon>
               </IconButton>
               <Tooltip>Excluir</Tooltip>
             </Wrapper>
@@ -187,6 +187,10 @@
 </ToastContainer>
 
 <style>
+  a:visited {
+    color: inherit;
+  }
+
   .title-add-container {
     display: flex;
     flex-direction: column;
