@@ -8,6 +8,7 @@
     Pagination,
     Row
   } from '@smui/data-table';
+  import Dialog, { Actions, Content, Title } from '@smui/dialog';
   import IconButton, { Icon } from '@smui/icon-button';
   import LinearProgress from '@smui/linear-progress';
   import { api } from '../../api/axios';
@@ -25,29 +26,29 @@
 
   const ROWS_PER_PAGE = 15;
 
-  let brl = new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  });
-
+  let open = false;
   let loaded = false;
   let page = 1;
   let lastPage: number;
   let start: number;
   let end: number;
   let count: number;
-
   let vehicles: Vehicle[] = [];
+  let selectedVehicleId = -1;
 
   $: start = (page - 1) * ROWS_PER_PAGE;
   $: end = Math.min(page * ROWS_PER_PAGE, count);
   $: page && getVehicles();
 
+  let brl = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  });
+
   const getVehicles = async () => {
     try {
       loaded = false;
       const result = await api.get(`/vehicles?page=${page}`);
-      console.log(result.data);
       vehicles = result.data.data;
       lastPage = result.data.meta.last_page;
       count = result.data.meta.total;
@@ -57,7 +58,18 @@
     }
   };
 
-  const deleteVehicle = async (id: number) => {};
+  const handleDelete = (id: number) => {
+    open = true;
+    selectedVehicleId = id;
+  };
+
+  const deleteVehicle = async () => {
+    loaded = false;
+    await api.delete(`/vehicle/${selectedVehicleId}`);
+    getVehicles();
+    selectedVehicleId = -1;
+    loaded = true;
+  };
 
   onMount(() => getVehicles());
 </script>
@@ -97,7 +109,7 @@
               <Icon class="material-icons">edit</Icon>
               <Label>Editar</Label>
             </Button>
-            <Button on:click={() => deleteVehicle(vehicle.id)}>
+            <Button on:click={() => handleDelete(vehicle.id)}>
               <Icon class="material-icons">delete</Icon>
               <Label>Excluir</Label>
             </Button>
@@ -142,6 +154,19 @@
     >
   </Pagination>
 </DataTable>
+
+<Dialog bind:open>
+  <Title>Atenção</Title>
+  <Content>Tem certeza que deseja excluir?</Content>
+  <Actions>
+    <Button on:click={deleteVehicle}>
+      <Label>Sim</Label>
+    </Button>
+    <Button on:click={() => (open = false)}>
+      <Label>Não</Label>
+    </Button>
+  </Actions>
+</Dialog>
 
 <style>
   .title-add-container {

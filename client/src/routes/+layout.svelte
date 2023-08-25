@@ -18,4 +18,10 @@
   .base-container {
     margin: 0 20%;
   }
+
+  @media (max-width: 1200px) {
+    .base-container {
+      margin: 0 32px;
+    }
+  }
 </style>

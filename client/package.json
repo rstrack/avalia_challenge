@@ -16,6 +16,7 @@
   "devDependencies": {
     "@smui/button": "^7.0.0-beta.14",
     "@smui/data-table": "^7.0.0-beta.14",
+    "@smui/dialog": "^7.0.0-beta.14",
     "@smui/drawer": "^7.0.0-beta.14",
     "@smui/icon-button": "^7.0.0-beta.14",
     "@smui/layout-grid": "^7.0.0-beta.14",
