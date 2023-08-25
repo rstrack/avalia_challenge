@@ -11,6 +11,7 @@
   import Dialog, { Actions, Content, Title } from '@smui/dialog';
   import IconButton, { Icon } from '@smui/icon-button';
   import LinearProgress from '@smui/linear-progress';
+  import { toasts, ToastContainer, FlatToast } from 'svelte-toasts';
   import { api } from '../../api/axios';
   import { formatDateString } from '../../helpers/dateFormat';
 
@@ -36,7 +37,7 @@
   let vehicles: Vehicle[] = [];
   let selectedVehicleId = -1;
 
-  $: start = (page - 1) * ROWS_PER_PAGE;
+  $: start = Math.min((page - 1) * ROWS_PER_PAGE, count);
   $: end = Math.min(page * ROWS_PER_PAGE, count);
   $: page && getVehicles();
 
@@ -54,7 +55,8 @@
       count = result.data.meta.total;
       loaded = true;
     } catch (e) {
-      console.log(e);
+      toasts.error('Erro no servidor');
+      loaded = true;
     }
   };
 
@@ -67,10 +69,15 @@
     loaded = false;
     await api.delete(`/vehicle/${selectedVehicleId}`);
     await getVehicles();
+    toasts.success('Veículo excluído com sucesso!');
     selectedVehicleId = -1;
   };
 
-  onMount(() => getVehicles());
+  onMount(() => {
+    if (history.state.success) {
+      toasts.success('Veículo adicionado com sucesso!');
+    }
+  });
 </script>
 
 <div class="title-add-container">
@@ -120,7 +127,7 @@
   <LinearProgress indeterminate bind:closed={loaded} slot="progress" />
   <Pagination slot="paginate">
     <svelte:fragment slot="total">
-      {start + 1}-{end} of {count}
+      {start + 1 || 0}-{end || 0} de {count || 0}
     </svelte:fragment>
 
     <IconButton
@@ -142,14 +149,14 @@
       action="next-page"
       title="Próxima página"
       on:click={() => page++}
-      disabled={page == lastPage}>chevron_right</IconButton
+      disabled={page == lastPage || !lastPage}>chevron_right</IconButton
     >
     <IconButton
       class="material-icons"
       action="last-page"
       title="Última página"
       on:click={() => (page = lastPage)}
-      disabled={page == lastPage}>last_page</IconButton
+      disabled={page == lastPage || !lastPage}>last_page</IconButton
     >
   </Pagination>
 </DataTable>
@@ -166,6 +173,10 @@
     </Button>
   </Actions>
 </Dialog>
+
+<ToastContainer placement="bottom-left" let:data>
+  <FlatToast {data} />
+</ToastContainer>
 
 <style>
   .title-add-container {

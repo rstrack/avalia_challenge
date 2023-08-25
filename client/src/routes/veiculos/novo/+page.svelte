@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import Button from '@smui/button';
+  import CircularProgress from '@smui/circular-progress';
   import LayoutGrid, { Cell } from '@smui/layout-grid';
   import Textfield from '@smui/textfield';
   import HelperText from '@smui/textfield/helper-text';
@@ -13,6 +14,9 @@
     required
   } from 'svelte-forms/validators';
   import { api } from '../../../api/axios';
+  import { FlatToast, ToastContainer, toasts } from 'svelte-toasts';
+
+  let loading = false;
 
   const brand = field('brand', '', [required(), min(3), max(255)]);
   const name = field('name', '', [required(), min(3), max(255)]);
@@ -35,12 +39,19 @@
 
   const handleSubmit = async () => {
     try {
+      loading = true;
       await myForm.validate();
       if ($myForm.valid) {
-        const result = await api.post('/vehicle/new', myForm.summary());
-        goto('/veiculos');
+        await api.post('/vehicle/new', myForm.summary());
+        loading = false;
+        goto('/veiculos', { state: { success: true } });
+      } else {
+        loading = false;
       }
-    } catch (e) {}
+    } catch (e: any) {
+      toasts.error(e.response?.data.message || 'Erro no servidor');
+      loading = false;
+    }
   };
 </script>
 
@@ -144,8 +155,17 @@
   <Cell span={12} />
 </LayoutGrid>
 <div class="submit-button">
-  <Button on:click={handleSubmit} variant="raised">Enviar</Button>
+  <Button on:click={handleSubmit} variant="raised" disabled={loading}>
+    {#if loading}
+      <CircularProgress style="height: 32px; width: 32px;" indeterminate />
+    {:else}
+      Enviar
+    {/if}
+  </Button>
 </div>
+<ToastContainer placement="bottom-left" let:data>
+  <FlatToast {data} />
+</ToastContainer>
 
 <style>
   .submit-button {

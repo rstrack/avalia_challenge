@@ -11,12 +11,6 @@
   import List, { Item, Text, Graphic, Separator, Subheader } from '@smui/list';
 
   let open = false;
-  let active: null | number;
-
-  function setActive(value: number) {
-    active = value;
-    open = false;
-  }
 </script>
 
 <TopAppBar variant="standard">
