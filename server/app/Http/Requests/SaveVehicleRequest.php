@@ -38,7 +38,7 @@ class SaveVehicleRequest extends FormRequest
             ],
             'plate' => [
                 'required',
-                'unique:vehicles',
+                'unique:vehicles,plate,' . $this->id,
                 'regex:/([A-Za-z]{2}[A-Za-z0-9][0-9][A-Za-z0-9]{3})|([A-Za-z]{3}-?[0-9]{4})/'
             ],
             'sale_value' => [
