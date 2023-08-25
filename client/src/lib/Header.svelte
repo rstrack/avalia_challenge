@@ -25,7 +25,9 @@
       <IconButton class="material-icons" on:click={() => (open = !open)}
         >menu</IconButton
       >
-      <Title>Avalia Challenge</Title>
+      <a href="/">
+        <Title>Avalia Challenge</Title>
+      </a>
     </Section>
   </Row>
 </TopAppBar>
@@ -51,3 +53,10 @@
 </Drawer>
 
 <Scrim fixed={false} />
+
+<style>
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+</style>
