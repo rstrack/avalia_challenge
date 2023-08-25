@@ -66,9 +66,8 @@
   const deleteVehicle = async () => {
     loaded = false;
     await api.delete(`/vehicle/${selectedVehicleId}`);
-    getVehicles();
+    await getVehicles();
     selectedVehicleId = -1;
-    loaded = true;
   };
 
   onMount(() => getVehicles());
