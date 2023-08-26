@@ -5,8 +5,10 @@ use App\Exceptions\AppError;
 use App\Http\Resources\VehicleResource;
 use App\Repositories\VehicleRepositoryInterface;
 
-class VehicleService {
+const DEFAULT_PAGINATION_SIZE = 10;
 
+class VehicleService {
+    
     public function __construct(protected VehicleRepositoryInterface $repository){}
 
     public function save($data, $id = null) {
@@ -24,8 +26,12 @@ class VehicleService {
         return new VehicleResource($vehicle);
     }
 
-    public function list(){
-        $vehicles = $this->repository->findAll();
+    public function list($pageSize, $filter){
+        if(!$pageSize || $pageSize < 1){
+            $_pageSize = DEFAULT_PAGINATION_SIZE;
+        }else $_pageSize = $pageSize;
+
+        $vehicles = $this->repository->findAll($_pageSize, $filter);
         return VehicleResource::collection($vehicles);      
     }
 

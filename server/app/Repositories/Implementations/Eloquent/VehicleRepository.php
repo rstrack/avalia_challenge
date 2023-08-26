@@ -14,8 +14,12 @@ class VehicleRepository implements VehicleRepositoryInterface {
         return $vehicle;
     }
 
-    public function findAll(){
-        return Vehicle::paginate();
+    public function findAll($pageSize, $filter){
+        return Vehicle::where('name', 'like', '%'. $filter . '%')
+        ->orWhere('brand', 'like', '%'. $filter . '%')
+        ->orWhere('year', 'like', '%'. $filter . '%')
+        ->orWhere('plate', 'like', '%'. $filter . '%')
+        ->paginate($pageSize);
     }
 
     public function create($data){

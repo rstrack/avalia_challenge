@@ -11,8 +11,10 @@
   import Dialog, { Actions, Content, Title } from '@smui/dialog';
   import IconButton, { Icon } from '@smui/icon-button';
   import LinearProgress from '@smui/linear-progress';
+  import Select, { Option } from '@smui/select';
   import Tooltip, { Wrapper } from '@smui/tooltip';
   import { toasts, ToastContainer, FlatToast } from 'svelte-toasts';
+  import Textfield from '@smui/textfield';
   import { api } from '../../api/axios';
   import { formatDateString } from '../../helpers/dateFormat';
 
@@ -30,6 +32,9 @@
 
   let open = false;
   let loaded = false;
+  let search = '';
+  let pageSize = 10;
+  let timeout: number;
   let page = 1;
   let lastPage: number;
   let start: number;
@@ -41,16 +46,24 @@
   $: start = (page - 1) * ROWS_PER_PAGE;
   $: end = Math.min(page * ROWS_PER_PAGE, count);
   $: page && getVehicles();
+  $: pageSize && getVehicles();
 
   let brl = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL'
   });
 
+  const handleSearch = () => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(getVehicles, 700);
+  };
+
   const getVehicles = async () => {
     try {
       loaded = false;
-      const result = await api.get(`/vehicles?page=${page}`);
+      const result = await api.get(
+        `/vehicles?page=${page}&size=${pageSize}&filter=${search}`
+      );
       vehicles = result.data.data;
       lastPage = result.data.meta.last_page;
       count = result.data.meta.total;
@@ -84,12 +97,21 @@
   });
 </script>
 
-<div class="title-add-container">
-  <h1>Veículos</h1>
-  <Button href={`veiculos/novo`} variant="raised">
-    <Icon class="material-icons">add</Icon>
-    <Label>Novo</Label>
-  </Button>
+<div class="main-grid">
+  <div class="title-new-container">
+    <h1>Veículos</h1>
+    <Button href={`veiculos/novo`} variant="raised">
+      <Icon class="material-icons">add</Icon>
+      <Label>Novo</Label>
+    </Button>
+  </div>
+  <Textfield
+    bind:value={search}
+    on:input={handleSearch}
+    label="Busca"
+    variant="outlined"
+    class="search-field"
+  />
 </div>
 
 <DataTable class="data-table">
@@ -106,7 +128,7 @@
   </Head>
   <Body>
     {#each vehicles as vehicle (vehicle.id)}
-      <Row class="data-table-row">
+      <Row>
         <Cell>{vehicle.brand}</Cell>
         <Cell>{vehicle.name}</Cell>
         <Cell>{vehicle.year}</Cell>
@@ -134,6 +156,14 @@
   </Body>
   <LinearProgress indeterminate bind:closed={loaded} slot="progress" />
   <Pagination slot="paginate">
+    <svelte:fragment slot="rowsPerPage">
+      <Label>Itens por página</Label>
+      <Select variant="outlined" bind:value={pageSize} noLabel>
+        <Option value={5}>5</Option>
+        <Option value={10}>10</Option>
+        <Option value={20}>20</Option>
+      </Select>
+    </svelte:fragment>
     <svelte:fragment slot="total">
       {Math.min(start + 1, end) || 0}-{end || 0} de {count || 0}
     </svelte:fragment>
@@ -191,11 +221,23 @@
     color: inherit;
   }
 
-  .title-add-container {
+  .main-grid {
     display: flex;
     flex-direction: column;
-    align-items: start;
-    margin-bottom: 32px;
+    gap: 0;
+    margin-bottom: 16px;
+  }
+
+  .title-new-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  :global(.search-field) {
+    width: 100%;
+    height: 48px;
   }
 
   :global(.data-table) {
